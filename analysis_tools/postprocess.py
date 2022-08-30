@@ -52,17 +52,12 @@ def postprocess_pop(ds):
     """
     POP specific Dataset postprocessing
     add standard_name, if known
-    convert area variables to m^2
     add area to cell_measures attribute
     add axis attributes to coordinates
     add nlon, nlat coordinates
     set time to average of time:bounds
     """
     add_standard_names(ds, standard_names["pop"])
-    ds["TAREA"] *= 1.0e-4
-    ds["TAREA"].attrs["units"] = "m^2"
-    ds["UAREA"] *= 1.0e-4
-    ds["UAREA"].attrs["units"] = "m^2"
     for varname in ds.data_vars:
         if "coordinates" in ds[varname].encoding:
             var_coords = ds[varname].encoding["coordinates"]

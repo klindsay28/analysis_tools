@@ -103,3 +103,24 @@ def key_value_str_to_dict(key_value_str):
         ret_val[word[:-1]] = key_value_list[i+1]
 
     return ret_val
+
+
+def expand_list_of_dicts(l_of_d, key):
+    """
+    construct list of dicts from list of dicts,
+    duplicating each dict d if d[key] is itself a list,
+        except d[key] is replaced with list entries
+    [{"key1": ["foo", "bar"], "key2": "val2"}]
+        -> [{"key1": "foo", "key2": "val2"}, {"key1": "bar", "key2": "val2"}]
+    """
+
+    ret_val = []
+    for d in l_of_d:
+        if isinstance(d, dict) and isinstance(d[key], list):
+            for obj in d[key]:
+                d_new = d.copy()
+                d_new[key] = obj
+                ret_val.append(d_new)
+        else:
+            ret_val.append(d)
+    return ret_val
