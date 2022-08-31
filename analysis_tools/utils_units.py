@@ -37,7 +37,7 @@ def conv_units_np(values, units_in, units_out):
     """
     return a copy of numpy array values, with units converted from units_in to units_out
     """
-    units_in_cf = cf_units.Unit(units_in)
+    units_in_cf = cf_units.Unit(clean_units(units_in))
     units_out_cf = cf_units.Unit(clean_units(units_out))
     return units_in_cf.convert(values, units_out_cf, inplace=False)
 
