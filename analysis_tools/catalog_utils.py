@@ -14,7 +14,38 @@ import pandas as pd
 import xarray as xr
 import yaml
 
+from .cime import cime_xmlquery
 from .postprocess import open_mfdataset_kwargs, postprocess
+
+
+def extract_case_metadata(caseroot, sname, esmcol_spec_dir):
+    """return case metadata dict from xml files in provided caseroot"""
+
+    # dict that translates comp name to name used in hist filenames, if they differ
+    scomp = {"cice5": "cice", "clm": "clm2", "mom": "mom6"}
+
+    case_metadata = {}
+    case_metadata["sname"] = sname
+    case = cime_xmlquery(caseroot, "CASE")
+    case_metadata["case"] = case
+    case_metadata["esmcol_spec_path"] = os.path.join(esmcol_spec_dir, f"{case}.json")
+    dout_s = cime_xmlquery(caseroot, "DOUT_S").upper() == "TRUE"
+    if dout_s:
+        dout_s_root = cime_xmlquery(caseroot, "DOUT_S_ROOT")
+    else:
+        rundir = cime_xmlquery(caseroot, "RUNDIR")
+    case_metadata["components"] = []
+    for gcomp in ["atm", "ice", "lnd", "ocn"]:
+        comp_dict = {}
+        comp_name = cime_xmlquery(caseroot, f"COMP_{gcomp.upper()}")
+        comp_dict["scomp"] = scomp.get(comp_name, comp_name)
+        if dout_s:
+            comp_dict["histdir"] = os.path.join(dout_s_root, gcomp, "hist")
+        else:
+            comp_dict["histdir"] = rundir
+        case_metadata["components"].append(comp_dict)
+
+    return case_metadata
 
 
 def get_cases_metadata(case_metadata_paths, cases_snames):
@@ -334,8 +365,8 @@ def extract_file_attrs(path):
     return attr_dict
 
 
-def catalog_sel_to_ds(catalog, date_range, case, scomp, stream, varname):
-    """create Dataset from catalog specific to other args"""
+def catalog_sel_to_df(catalog, date_range, case, scomp, stream, varname):
+    """create dataframe from catalog specific to other args"""
     df = catalog.df
     # The date_start==date_end conditional in the following conditional is to
     # ensure that MOM6's static stream always gets propagated if present.
@@ -351,8 +382,15 @@ def catalog_sel_to_ds(catalog, date_range, case, scomp, stream, varname):
     inds = [ind for ind, varnames in enumerate(df["varname"]) if varname in varnames]
     if len(inds) == 0:
         return None
-    print(f"generating ds, len(inds)={len(inds)}")
-    df = df.iloc[inds]
+    return df.iloc[inds]
+
+
+def catalog_sel_to_ds(catalog, date_range, case, scomp, stream, varname):
+    """create Dataset from catalog specific to other args"""
+    df = catalog_sel_to_df(catalog, date_range, case, scomp, stream, varname)
+    if df is None:
+        return None
+    print(f"generating ds, len(df)={len(df)}")
     paths = df["path"].to_list()
     kwargs = {
         "compat": "override",

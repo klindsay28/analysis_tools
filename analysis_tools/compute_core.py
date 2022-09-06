@@ -5,12 +5,16 @@ from .utils import key_value_str_to_dict
 from .utils_units import clean_units
 
 
-def reduce(ds, da_in, reduce_op, reduce_axes, mask=None):
+def reduce(ds, da_in, reduce_op, reduce_axes, measure=None, mask=None):
     """reduce da along reduce_axes, using reduce_op"""
 
-    weight = get_cell_measure(ds, da_in, "area").fillna(0)
+    weight = get_cell_measure(ds, da_in, measure).fillna(0)
+
+    # note that mask may have additional dimensions, e.g., region
     if mask is not None:
+        attrs = weight.attrs
         weight = mask * weight
+        weight.attrs = attrs
 
     # TODO: if "T" in reduce_axes then multiply weight by dt
 

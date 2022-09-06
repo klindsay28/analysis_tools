@@ -33,6 +33,8 @@ def postprocess(ds, scomp, **kwargs):
 
     if scomp == "pop":
         pp_fcn = postprocess_pop
+    elif scomp == "cice":
+        pp_fcn = postprocess_cice
     elif scomp == "mom6":
         pp_fcn = postprocess_mom6
     else:
@@ -73,6 +75,19 @@ def postprocess_pop(ds):
             ds[coordname].attrs["axis"] = "Z"
     ds["nlat"] = ("nlat", np.arange(ds.sizes["nlat"]), {"axis": "Y"})
     ds["nlon"] = ("nlon", np.arange(ds.sizes["nlon"]), {"axis": "X"})
+    return time_set_mid(ds, "time")
+
+
+def postprocess_cice(ds):
+    """
+    CICE specific Dataset postprocessing
+    add axis attributes to coordinates
+    add nlon, nlat coordinates
+    set time to average of time:bounds
+    """
+    ds["time"].attrs["axis"] = "T"
+    ds["nj"] = ("nj", np.arange(ds.sizes["nj"]), {"axis": "Y"})
+    ds["ni"] = ("ni", np.arange(ds.sizes["ni"]), {"axis": "X"})
     return time_set_mid(ds, "time")
 
 
