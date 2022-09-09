@@ -1,0 +1,14 @@
+name: analysis_tools_ci
+channels:
+  - conda-forge
+dependencies:
+  - cftime
+  - cf-units
+  - dask
+  - intake
+  - netCDF4
+  - numpy
+  - pandas
+  - pytest
+  - pyyaml
+  - xarray
