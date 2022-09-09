@@ -8,6 +8,7 @@ import xarray as xr
 from xr_ds_ex import xr_ds_ex, gen_time_bounds_values
 from analysis_tools.utils import lon_shift, time_year_plus_frac, time_set_mid
 from analysis_tools.utils import repl_coord, key_value_str_to_dict
+from analysis_tools.utils import expand_list_of_dicts
 
 nyrs = 300
 var_const = False
@@ -103,3 +104,19 @@ def test_key_value_str_to_dict():
     d = {"key1": "val1", "key2": "val2", "key3": "val3"}
     key_value_str = " ".join([f"{str(key)}: {str(d[key])}" for key in d])
     assert key_value_str_to_dict(key_value_str) == d
+
+
+def test_expand_list_of_dicts():
+    # list example
+    l_of_d = [{"key1": ["foo", "bar"], "key2": "val2"}]
+    expected = [{"key1": "foo", "key2": "val2"}, {"key1": "bar", "key2": "val2"}]
+    assert expand_list_of_dicts(l_of_d, "key1") == expected
+    assert expand_list_of_dicts(l_of_d, "key2") == l_of_d
+    assert expand_list_of_dicts(l_of_d, "key3") == l_of_d
+
+    # tuple example
+    l_of_d = [{"key1": ("foo", "bar"), "key2": "val2"}]
+    expected = [{"key1": "foo", "key2": "val2"}, {"key1": "bar", "key2": "val2"}]
+    assert expand_list_of_dicts(l_of_d, "key1") == expected
+    assert expand_list_of_dicts(l_of_d, "key2") == l_of_d
+    assert expand_list_of_dicts(l_of_d, "key3") == l_of_d
