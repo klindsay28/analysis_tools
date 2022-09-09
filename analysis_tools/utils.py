@@ -108,9 +108,9 @@ def key_value_str_to_dict(key_value_str):
 def expand_list_of_dicts(l_of_d, key):
     """
     construct list of dicts from list of dicts,
-    duplicating each dict d if d[key] is list or tuple,
+    duplicating each dict d if d[key] is a list or tuple,
         except d[key] is replaced with objects returned by iterating over d[key]
-    [{"key1": ["foo", "bar"], "key2": "val2"}] ->
+    l_of_d=[{"key1": ["foo", "bar"], "key2": "val2"}], key="key1" ->
         [{"key1": "foo", "key2": "val2"}, {"key1": "bar", "key2": "val2"}]
     """
 
