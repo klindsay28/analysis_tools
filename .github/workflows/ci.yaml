@@ -34,6 +34,10 @@ jobs:
           python -m pip install . --no-deps
           conda list
 
+      - name: Code Checks
+        run: |
+          black --check .
+
       - name: Run Tests
         run: |
           python -m pytest

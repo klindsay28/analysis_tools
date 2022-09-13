@@ -2,6 +2,7 @@ name: analysis_tools_ci
 channels:
   - conda-forge
 dependencies:
+  - black
   - cftime
   - cf-units
   - dask

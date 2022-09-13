@@ -11,12 +11,10 @@ def cime_xmlquery(caseroot, varname):
         value = subprocess.check_output(
             ["./xmlquery", "-N", "--value", varname],
             stderr=subprocess.STDOUT,
-            cwd=caseroot
+            cwd=caseroot,
         )
     except subprocess.CalledProcessError:
         value = subprocess.check_output(
-            ["./xmlquery", "--value", varname],
-            stderr=subprocess.STDOUT,
-            cwd=caseroot
+            ["./xmlquery", "--value", varname], stderr=subprocess.STDOUT, cwd=caseroot
         )
     return value.decode()

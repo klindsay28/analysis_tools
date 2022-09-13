@@ -98,7 +98,7 @@ def cases_metadata_to_catalog(cases_metadata, path_pattern=None):
         # read catalog file, subset rows whose path matches path_pattern, append to df_list
         df = read_catalog(esmcol_spec["catalog_file"])
         if path_pattern is not None:
-            df = df[df["path"].str.match(".*"+path_pattern+".*")]
+            df = df[df["path"].str.match(".*" + path_pattern + ".*")]
         df_list.append(df)
 
     esmcol_data = pd.concat(df_list, ignore_index=True)
@@ -142,7 +142,9 @@ def esmcol_files_uptodate(case_metadata, path_pattern, debug=False):
         paths = get_hist_paths(comp_metadata["histdir"], case, scomp, path_pattern)
         if sorted(col_paths) != paths:
             if debug:
-                print(f"path mismatch for {scomp}, len(col_paths)={len(col_paths)}, len(paths)={len(paths)}")
+                print(
+                    f"path mismatch for {scomp}, len(col_paths)={len(col_paths)}, len(paths)={len(paths)}"
+                )
             return False
 
     return True
@@ -174,7 +176,7 @@ def gen_esmcol_files(case_metadata, path_pattern):
     print(f"generating esmcol files for {case_metadata['sname']}")
 
     esmcol_spec_path = case_metadata["esmcol_spec_path"]
-    esmcol_data_path = esmcol_spec_path.rpartition(".")[0]+".csv.gz"
+    esmcol_data_path = esmcol_spec_path.rpartition(".")[0] + ".csv.gz"
 
     esmcol_spec = {
         "esmcat_version": "0.1.0",
@@ -186,15 +188,14 @@ def gen_esmcol_files(case_metadata, path_pattern):
             {"column_name": "scomp"},
             {"column_name": "path"},
             {"column_name": "stream"},
-            {"column_name": "datestring"},  # datestring portion of filename, used for sorting
+            {
+                "column_name": "datestring"
+            },  # datestring portion of filename, used for sorting
             {"column_name": "date_start"},  # date portion of initial time in file
-            {"column_name": "date_end"},    # date portion of end time in file
+            {"column_name": "date_end"},  # date portion of end time in file
             {"column_name": "varname"},
         ],
-        "assets": {
-            "column_name": "path",
-            "format": "netcdf"
-        },
+        "assets": {"column_name": "path", "format": "netcdf"},
         "aggregation_control": {
             "variable_column_name": "varname",
             "groupby_attrs": [  # columns whose entries must agree for rows to be aggregatable
@@ -203,21 +204,18 @@ def gen_esmcol_files(case_metadata, path_pattern):
                 "stream",
             ],
             "aggregations": [
-                {
-                    "type": "union",
-                    "attribute_name": "varname"
-                },
+                {"type": "union", "attribute_name": "varname"},
                 {
                     "type": "join_existing",
                     "attribute_name": "datestring",
                     "options": {
                         "dim": "time",
                         "coords": "minimal",
-                        "compat": "override"
-                    }
-                }
-            ]
-        }
+                        "compat": "override",
+                    },
+                },
+            ],
+        },
     }
 
     with open(esmcol_spec_path, mode="w") as fptr:
@@ -231,9 +229,7 @@ def gen_esmcol_files(case_metadata, path_pattern):
         pprint.pprint(comp_metadata)
         scomp = comp_metadata["scomp"]
 
-        paths = get_hist_paths(
-            comp_metadata["histdir"], case, scomp, path_pattern
-        )
+        paths = get_hist_paths(comp_metadata["histdir"], case, scomp, path_pattern)
         for path in paths:
             row = delayed(gen_esmcol_row)(path, case, scomp)
             esmcol_data_rows.append(row)
@@ -251,7 +247,9 @@ def get_hist_paths(histdir, case, scomp, path_pattern):
     paths = glob.glob(f"{histdir}/{case}.{scomp}*.nc")
     # ignore restart stream
     rest_pattern = f"{case}.{scomp}.r."
-    paths = [path for path in paths if not os.path.basename(path).startswith(rest_pattern)]
+    paths = [
+        path for path in paths if not os.path.basename(path).startswith(rest_pattern)
+    ]
     # filter based on path_pattern, if specified
     if path_pattern is not None:
         paths = [path for path in paths if re.search(path_pattern, path)]
@@ -277,10 +275,10 @@ def path_to_attrs(path, case, scomp):
     basename = os.path.basename(path)
 
     # remove {case}.{scomp}. prefix
-    prefix = case+"."+scomp+"."
+    prefix = case + "." + scomp + "."
     if not basename.startswith(prefix):
         raise ValueError(f"{basename} does not start with {prefix}")
-    remainder = basename[len(prefix):]
+    remainder = basename[len(prefix) :]
 
     # remove extension
     remainder, _, _ = remainder.rpartition(".")
@@ -293,8 +291,8 @@ def path_to_attrs(path, case, scomp):
     if match_obj is None:
         return {"stream": remainder}
 
-    attr_dict = {"datestring": remainder[match_obj.start()+1:]}
-    remainder = remainder[:match_obj.start()]
+    attr_dict = {"datestring": remainder[match_obj.start() + 1 :]}
+    remainder = remainder[: match_obj.start()]
 
     # if the datestring is a date range, infer that this is a single variable file
     # and that the last "." separated portion of the remainder is a varname
@@ -372,9 +370,9 @@ def catalog_sel_to_df(catalog, date_range, case, scomp, stream, varname):
     # ensure that MOM6's static stream always gets propagated if present.
     # This is needed for grid metrics.
     # There might be other ways to accomplish this.
-    date_mask = (((df["date_start"] < date_range[1])
-                  & (df["date_end"] > date_range[0]))
-                 | (df["date_start"] == df["date_end"]))
+    date_mask = (
+        (df["date_start"] < date_range[1]) & (df["date_end"] > date_range[0])
+    ) | (df["date_start"] == df["date_end"])
     df = df[date_mask]
     df = df[df["case"] == case]
     df = df[df["scomp"] == scomp]

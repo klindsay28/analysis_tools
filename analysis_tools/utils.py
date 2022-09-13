@@ -97,10 +97,8 @@ def key_value_str_to_dict(key_value_str):
     for i in range(0, len(key_value_list), 2):
         word = key_value_list[i]
         if word[-1] != ":":
-            raise ValueError(
-                f"word={word} not colon terminated in {key_value_str}"
-            )
-        ret_val[word[:-1]] = key_value_list[i+1]
+            raise ValueError(f"word={word} not colon terminated in {key_value_str}")
+        ret_val[word[:-1]] = key_value_list[i + 1]
 
     return ret_val
 

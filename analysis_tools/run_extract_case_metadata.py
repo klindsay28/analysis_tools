@@ -33,8 +33,11 @@ def parse_args(args):
 def main(args):
     """execute extract_case_metadata based on command line arguments"""
 
-    case_metadata = extract_case_metadata(args.caseroot, args.sname, args.esmcol_spec_dir)
+    case_metadata = extract_case_metadata(
+        args.caseroot, args.sname, args.esmcol_spec_dir
+    )
     print(yaml.dump([case_metadata], sort_keys=False))
+
 
 if __name__ == "__main__":
     main(parse_args(sys.argv[1:]))

@@ -43,9 +43,7 @@ def postprocess(ds, scomp, **kwargs):
     # construct args to post processing function
     kwargs_avail = {"ds": ds}
     kwargs_avail.update(kwargs)
-    pp_kwargs = {
-        arg: kwargs_avail[arg] for arg in signature(pp_fcn).parameters
-    }
+    pp_kwargs = {arg: kwargs_avail[arg] for arg in signature(pp_fcn).parameters}
 
     return pp_fcn(**pp_kwargs)
 
