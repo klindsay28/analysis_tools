@@ -155,8 +155,8 @@ standard_names = {
     },
     "MARBL": {
         "FG_CO2": "surface_downward_mole_flux_of_carbon_dioxide",
-        "DpCO2": "surface_carbon_dioxide_partial_pressure_difference_between_sea_water_and_air",
-        "photoC_TOT_zint": "net_primary_mole_productivity_of_biomass_expressed_as_carbon_by_phytoplankton",
+        "DpCO2": "surface_carbon_dioxide_partial_pressure_difference_between_sea_water_and_air",  # noqa: E501
+        "photoC_TOT_zint": "net_primary_mole_productivity_of_biomass_expressed_as_carbon_by_phytoplankton",  # noqa: E501
         "DIC": "mole_concentration_of_dissolved_inorganic_carbon_in_sea_water",
         "ALK": "sea_water_alkalinity_expressed_as_mole_equivalent",
         "PO4": "mole_concentration_of_dissolved_inorganic_phosphorus_in_sea_water",

@@ -37,6 +37,7 @@ jobs:
       - name: Code Checks
         run: |
           black --check .
+          flake8
 
       - name: Run Tests
         run: |

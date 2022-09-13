@@ -68,8 +68,8 @@ def time_set_mid(ds, time_name, deep=False):
 def time_year_plus_frac(ds, time_name):
     """return time variable, as numpy array of year plus fraction of year values"""
 
-    # this is straightforward if time has units='days since 0000-01-01' and calendar='noleap'
-    # so convert specification of time to that representation
+    # This is straightforward if time has units='days since 0000-01-01' and
+    # calendar='noleap', so convert specification of time to that representation.
 
     # get time values as an np.ndarray of cftime objects
     if np.dtype(ds[time_name]) == np.dtype("O"):

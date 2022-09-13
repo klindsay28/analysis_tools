@@ -6,6 +6,7 @@ dependencies:
   - cftime
   - cf-units
   - dask
+  - flake8
   - intake
   - netCDF4
   - numpy

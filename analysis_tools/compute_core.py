@@ -1,8 +1,7 @@
-import cf_xarray as cfxr
+import cf_xarray as cfxr  # noqa: F401
 import xarray as xr
 
 from .utils import key_value_str_to_dict
-from .utils_units import clean_units
 
 
 def reduce(ds, da_in, reduce_op, reduce_axes, measure=None, mask=None):
@@ -33,7 +32,7 @@ def reduce(ds, da_in, reduce_op, reduce_axes, measure=None, mask=None):
         da_out.attrs["long_name"] = "Averaged " + da_in.attrs["long_name"]
 
     # delete attributes that are no longer applicable after reduction
-    # TODO: modify cell_methods, cell_measures, and coordinates appropriately for reduce_axes
+    # TODO: https://github.com/klindsay28/analysis_tools/issues/1
     for key in ["cell_measures", "coordinates", "grid_loc"]:
         if key in da_out.attrs:
             del da_out.attrs[key]

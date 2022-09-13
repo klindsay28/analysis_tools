@@ -86,16 +86,18 @@ def cases_metadata_to_catalog(cases_metadata, path_pattern=None):
             esmcol_spec = json.load(fptr)
             if len(cases_metadata) > 1:
                 if ind == 0:
-                    esmcol_spec_path0 = esmcol_spec_path
-                    esmcol_spec0 = esmcol_spec
+                    path0 = esmcol_spec_path
+                    spec0 = esmcol_spec
                 else:
                     for key in spec_consistency_keys:
-                        if esmcol_spec[key] != esmcol_spec0[key]:
+                        if esmcol_spec[key] != spec0[key]:
                             raise ValueError(
-                                f"{key} mismatch in {esmcol_spec_path} and {esmcol_spec_path0}"
+                                f"{key} mismatch in {esmcol_spec_path} and {path0}"
                             )
 
-        # read catalog file, subset rows whose path matches path_pattern, append to df_list
+        # read catalog file
+        # subset rows whose path matches path_pattern
+        # append to df_list
         df = read_catalog(esmcol_spec["catalog_file"])
         if path_pattern is not None:
             df = df[df["path"].str.match(".*" + path_pattern + ".*")]
@@ -142,9 +144,8 @@ def esmcol_files_uptodate(case_metadata, path_pattern, debug=False):
         paths = get_hist_paths(comp_metadata["histdir"], case, scomp, path_pattern)
         if sorted(col_paths) != paths:
             if debug:
-                print(
-                    f"path mismatch for {scomp}, len(col_paths)={len(col_paths)}, len(paths)={len(paths)}"
-                )
+                print(f"path mismatch for {scomp}")
+                print(f"len(col_paths)={len(col_paths)}, len(paths)={len(paths)}")
             return False
 
     return True
@@ -171,7 +172,9 @@ def read_catalog(path):
 
 
 def gen_esmcol_files(case_metadata, path_pattern):
-    """generate files describing an esm collection for case described by case_metadata"""
+    """
+    generate files describing an esm collection for case described by case_metadata
+    """
 
     print(f"generating esmcol files for {case_metadata['sname']}")
 
@@ -198,7 +201,8 @@ def gen_esmcol_files(case_metadata, path_pattern):
         "assets": {"column_name": "path", "format": "netcdf"},
         "aggregation_control": {
             "variable_column_name": "varname",
-            "groupby_attrs": [  # columns whose entries must agree for rows to be aggregatable
+            # columns whose entries must agree for rows to be aggregatable
+            "groupby_attrs": [
                 "case",
                 "scomp",
                 "stream",
@@ -287,7 +291,8 @@ def path_to_attrs(path, case, scomp):
     match_obj = re.search("[_.][0-9][0-9]", remainder)
 
     # if there is no datestring, infer this is a time invariant file
-    # assume that such files are not single variable files and that remainder is the stream
+    # assume that such files are not single variable files
+    # and that remainder is the stream
     if match_obj is None:
         return {"stream": remainder}
 

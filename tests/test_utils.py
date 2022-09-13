@@ -3,7 +3,6 @@
 import pytest
 import cftime
 import numpy as np
-import xarray as xr
 
 from xr_ds_ex import xr_ds_ex, gen_time_bounds_values
 from analysis_tools.utils import lon_shift, time_year_plus_frac, time_set_mid
@@ -97,7 +96,7 @@ def test_time_year_plus_frac(decode_times):
     ds = xr_ds_ex(decode_times, nyrs=nyrs, var_const=var_const)
 
     # call time_year_plus_frac to ensure that it doesn't raise an exception
-    ty = time_year_plus_frac(ds, "time")
+    ty = time_year_plus_frac(ds, "time")  # noqa: F841
 
 
 def test_key_value_str_to_dict():

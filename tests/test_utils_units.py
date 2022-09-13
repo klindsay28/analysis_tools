@@ -1,7 +1,6 @@
 #! /usr/bin/env python3
 
 import pytest
-import xarray as xr
 import numpy as np
 
 from analysis_tools.utils_units import clean_units, conv_units

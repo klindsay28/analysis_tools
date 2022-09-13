@@ -47,9 +47,12 @@ def conv_units(da, units_out):
     return a copy of da, with units converted to units_out
     """
     # use apply_ufunc to preserve dask-ness of da
-    func = lambda values: conv_units_np(values, da.attrs["units"], units_out)
     da_out = xr.apply_ufunc(
-        func, da, keep_attrs=True, dask="parallelized", output_dtypes=[da.dtype]
+        lambda values: conv_units_np(values, da.attrs["units"], units_out),
+        da,
+        keep_attrs=True,
+        dask="parallelized",
+        output_dtypes=[da.dtype],
     )
     da_out.attrs["units"] = units_out
     da_out.encoding = da.encoding
