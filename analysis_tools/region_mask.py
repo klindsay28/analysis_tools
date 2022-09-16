@@ -20,6 +20,9 @@ def gen_region_mask(ds, da, region_names):
         isel_dict[dim] = 0
     surf_mask = xr.where(da.isel(isel_dict).notnull(), 1.0, 0.0)
 
+    if "LANDFRAC" in ds:
+        LF_clip = ds["LANDFRAC"][0, :].clip(min=0.0, max=1.0)
+
     for region_ind, region_name in enumerate(region_names):
         if region_name == "Global":
             rmask.values[region_ind, :, :] = xr.where(
@@ -34,7 +37,7 @@ def gen_region_mask(ds, da, region_names):
                 0.0,
             )
             if "LANDFRAC" in ds:
-                rmask.values[region_ind, :, :] *= 1.0 - ds["LANDFRAC"][0, :]
+                rmask.values[region_ind, :, :] *= 1.0 - LF_clip
         elif region_name == "SH":
             rmask.values[region_ind, :, :] = xr.where(
                 (da.cf["latitude"] < 0.0) & (da.cf["longitude"] > -361.0),
@@ -47,6 +50,19 @@ def gen_region_mask(ds, da, region_names):
                 surf_mask,
                 0.0,
             )
+        elif region_name == "SouOce":
+            rmask.values[region_ind, :, :] = xr.where(
+                ((da.cf["latitude"] < -34.0) & (da.cf["longitude"] > -361.0))
+                | (
+                    (da.cf["latitude"] < -31.0)
+                    & (lon_shift(da.cf["longitude"], 0) > 118.0)
+                    & (lon_shift(da.cf["longitude"], 0) < 145.0)
+                ),
+                surf_mask,
+                0.0,
+            )
+            if "LANDFRAC" in ds:
+                rmask.values[region_ind, :, :] *= 1.0 - LF_clip
         elif region_name == "NPac":
             rmask.values[region_ind, :, :] = xr.where(
                 (da.cf["latitude"] > 40.0)
@@ -57,7 +73,7 @@ def gen_region_mask(ds, da, region_names):
                 0.0,
             )
             if "LANDFRAC" in ds:
-                rmask.values[region_ind, :, :] *= 1.0 - ds["LANDFRAC"][0, :]
+                rmask.values[region_ind, :, :] *= 1.0 - LF_clip
         elif region_name == "LabSea":
             rmask.values[region_ind, :, :] = xr.where(
                 (da.cf["latitude"] > 52.0)
@@ -68,7 +84,7 @@ def gen_region_mask(ds, da, region_names):
                 0.0,
             )
             if "LANDFRAC" in ds:
-                rmask.values[region_ind, :, :] *= 1.0 - ds["LANDFRAC"][0, :]
+                rmask.values[region_ind, :, :] *= 1.0 - LF_clip
         else:
             raise ValueError(f"Unknown region name {region_name}")
 

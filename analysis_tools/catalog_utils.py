@@ -188,7 +188,7 @@ def gen_esmcol_files(case_metadata, path_pattern):
         "catalog_file": esmcol_data_path,
         "attributes": [
             {"column_name": "case"},
-            {"column_name": "scomp"},
+            {"column_name": "scomp"},  # specific component name, used in filenames
             {"column_name": "path"},
             {"column_name": "stream"},
             {
@@ -326,11 +326,6 @@ def extract_file_attrs(path):
 
     time = "time"
     tb_name = ""
-
-    # TODO: With xarray API, we call postprocess after opening a netCDF file.
-    # This might be dropping variables. Because this function uses the netCDF4 API,
-    # it can't call postprocess, so it might include variable names dropped by
-    # postprocess. Need to figure out how to avoid this.
 
     with Dataset(path) as fptr:
         if time in fptr.variables:
