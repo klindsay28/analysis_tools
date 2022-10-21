@@ -105,7 +105,11 @@ def cases_metadata_to_catalog(cases_metadata, path_pattern=None):
 
     esmcol_data = pd.concat(df_list, ignore_index=True)
 
-    return intake.open_esm_datastore(esmcol_data, esmcol_spec)
+    # maintaining backwards compability due to intake-esm syntax change 
+    if packaging.version.Version('2022.9.18') < packaging.version.Version(intake_esm.__version__):
+        return intake.open_esm_datastore(esmcol_data, esmcol_spec) 
+    else:
+        return intake.open_esm_datastore({'df': esmcol_data, 'esmcat': esmcol_spec})
 
 
 def esmcol_files_uptodate(case_metadata, path_pattern, debug=False):
