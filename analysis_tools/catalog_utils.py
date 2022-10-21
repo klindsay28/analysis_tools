@@ -13,6 +13,8 @@ from netCDF4 import Dataset
 import pandas as pd
 import xarray as xr
 import yaml
+import packaging
+import intake_esm
 
 from .cime import cime_xmlquery
 from .postprocess import open_mfdataset_kwargs, postprocess
