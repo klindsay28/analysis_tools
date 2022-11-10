@@ -4,7 +4,7 @@ from datetime import datetime
 import inspect
 
 import cftime
-import dask
+import dask.array
 import numpy as np
 import xarray as xr
 
